@@ -5,7 +5,10 @@
 // Explanation: Callbacks are not async by default, this was a sync call so the message
 // variable was not defined by the time the callback was called.
 function doAsyncTask(cb) {
-  setTimeout(cb, 0)
+  setTimeout(cb)
+
+  // or
+  //process.nextTick(cb)
 }
 
 doAsyncTask(_ => console.log(message));
@@ -13,22 +16,24 @@ doAsyncTask(_ => console.log(message));
 let message = "Callback Called";
 
 // # Question 2
+// The below code swallows the error and doesn't pass it up the chain,
+// make it pass the error up the stack using the next callback.
 
-// The below code swallows the error and doesn't pass it up the chain, make it pass the error up the stack using the next callback.
+const fs = require("fs");
 
-// ```js
-// const fs = require("fs");
+function readFileThenDo(next) {
+  fs.readFile("./blah.nofile", (err, data) => {
+    if (err) {
+      next(err)
+    } else {
+      next(data);
+    }
+  });
+}
 
-// function readFileThenDo(next) {
-//   fs.readFile("./blah.nofile", (err, data) => {
-//     next(data);
-//   });
-// }
-
-// readFileThenDo(data => {
-//   console.log(data);
-// });
-// ```
+readFileThenDo(data => {
+  console.log(data);
+});
 
 // # Question 3
 
