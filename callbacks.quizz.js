@@ -22,7 +22,7 @@ let message = "Callback Called";
 const fs = require("fs");
 
 function readFileThenDo(next) {
-  fs.readFile("./blah.nofile", (err, data) => {
+  fs.readFile("./blah1.nofile", (err, data) => {
     if (err) {
       next(err)
     } else {
@@ -36,20 +36,27 @@ readFileThenDo(data => {
 });
 
 // # Question 3
-
 // Instead of passing it up the stack throw it instead and try to catch it later on.
 
-// ```js
-// const fs = require("fs");
+// Explanation: Or if the error is serious, you can throw the error as soon as you see it.
+// try..catch desn't work as you expect with callbacks, it only really works with synchronous code.
+// By the time the callback throws the error we have moved on from the try..catch,
+// the throw happens in the root scope and will just cause the program to exit.
 
-// function readFileThenDo(next) {
-//   fs.readFile("./blah.nofile", (err, data) => {
-//     if (err) throw err;
-//     next(data);
-//   });
-// }
-// // Hint use try..catch
-// readFileThenDo(data => {
-//   console.log(data);
-// });
-// ```
+function readFileThenDo(next) {
+  fs.readFile("./blah.nofile", (err, data) => {
+    next(err, data);
+  });
+}
+
+// Hint use try..catch
+readFileThenDo((err, data) => {
+  try {
+    if (err) throw err
+    console.log('trying');
+    console.log(data);
+  } catch (err) {
+    console.log('catching');
+    console.error(err)
+  }
+});
