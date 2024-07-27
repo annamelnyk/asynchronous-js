@@ -10,34 +10,64 @@ function readFile(filename, encoding) {
     fs.readFile(filename, encoding, (err, data) => {
       if (err) reject(err)
       resolve(data)
-    // in promise will work only one hadler `resolve` or `reject` => dont need `if ... else` statement
+      // in promise will work only one hadler `resolve` or `reject` => dont need `if ... else` statement
+    })
+  })
+}
+
+readFile("./files/demofile.txt", "utf-8").then(
+  (data) => console.log("File read JS", data),
+  (err) => console.error("Oops Js", err.message)
+  // `then` can take two arguments, the second argument is a _error_ handler
+  // that gets called if the promise is `rejected`
+)
+
+// NodeJS way
+const util = require("util")
+const readFileNode = util.promisify(fs.readFile)
+
+readFileNode("./files/demofile.txt", "utf-8").then(
+  (data) => console.log("File read Node", data),
+  (err) => console.error("Oops Node", err.message)
+)
+
+// Question 2
+//Load a file from disk using readFile and then compress it using the async zlib node library,
+// use a promise chain to process this work.
+
+//const fs = require("fs")
+const zlib = require("zlib")
+
+function zlibPromise(data) {
+  return new Promise((resolve, reject) => {
+    zlib.gzip(data, (error, result) => {
+      if (error) {
+        reject(error)
+      } else {
+        resolve(result)
+      }
+    })
+  })
+}
+
+function readFile(filename, encoding) {
+  return new Promise((resolve, reject) => {
+    fs.readFile(filename, encoding, (err, data) => {
+      if (err) {
+        reject(err)
+      } else {
+        resolve(data)
+      }
     })
   })
 }
 
 readFile("./files/demofile.txt", "utf-8")
   .then(
-    (data) => console.log("File read JS", data),
-    (err) => console.error("Oops Js", err.message)
-    // `then` can take two arguments, the second argument is a _error_ handler
-    // that gets called if the promise is `rejected`
+    (data) => zlibPromise(data),
+    (err) => console.error("Error read", err)
   )
-
-// NodeJS way
-const util = require("util");
-const readFileNode = util.promisify(fs.readFile)
-
-readFileNode("./files/demofile.txt", "utf-8")
   .then(
-    (data) => console.log("File read Node", data),
-    (err) => console.error("Oops Node", err.message)
-  )
-
-
-  // Question 2
-  //Load a file from disk using readFile and then compress it using the async zlib node library,
-  // use a promise chain to process this work.
-
-  const fs = require("fs");
-  const zlib = require("zlib");
-
+    (data) => console.log(data),
+    (err) => console.error("Error zip", err)
+  ) // --> Load it then zip it and then print it to screen
