@@ -29,3 +29,41 @@
 
     BONUS: WHY does it work this way?
 */
+
+console.log("Program started")
+const promise = new Promise((resolve, reject) => {
+  setTimeout(() => {
+    resolve({
+      data: "Hello, friend!",
+      error: null
+    })
+  }, 3000)
+})
+
+console.log(promise)
+console.log("Program in progress...")
+
+// First chain
+promise.then((value) => {
+  console.log(value)
+
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve("First promise chain complete!")
+    }, 2000)
+  }).then(console.log)
+})
+
+// Second chain
+promise.then((value) => {
+  console.log(value)
+
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve("Second promise chain complete!")
+    }, 3000)
+  }).then(console.log)
+})
+
+// => First and asecond chains is running in parallel
+// First chain will fullfilled in 2sec, second chain - in 1sec after first chain
