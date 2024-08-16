@@ -34,7 +34,9 @@ promise2.then((value) => {
   console.log('Result 2 ', value)
 })
 
-Promise.all([promise1, promise2]).then(v => {
-  console.log(v.reduce((acc, num) => acc + num))
+Promise.all([promise1, promise2]).then(res => {
+  const [a, b] = res
+
+  console.log(a + b)
 })
 
